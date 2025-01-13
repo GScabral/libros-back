@@ -1,35 +1,43 @@
-const express= require("express");
-const cookieParser=require('cookie-parser');
-const bodyParser=require("body-parser");
-const cors=require("cors")
-const path = require("path")
-const routes= require('./routes/index.js')
+const express = require("express");
+const cookieParser = require('cookie-parser');
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const path = require("path");
+const routes = require('./routes/index.js');
 
 require("./db.js");
 
-const server=express();
-server.name="SERVER LIBRO";
+const server = express();
+server.name = "SERVER LIBRO";
 
-server.use(bodyParser.urlencoded({extended:true,limit:'50mb'}));
-server.use(bodyParser.json({limit:'50mb'}))
-server.use(cookieParser())
-server.use(cors());
+// Configuración de CORS
+const allowedOrigins = ['http://localhost:3007', 'https://gscabral.github.io'];
+server.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true, // Permite enviar cookies
+    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH', // Métodos permitidos
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept', // Headers permitidos
+}));
 
-server.use((req,res,next)=>{
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3007');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH'); //esto son las acciones que le perimito hacer a mi back mediante solicitudes del front
-    next();
-})
+server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+server.use(bodyParser.json({ limit: '50mb' }));
+server.use(cookieParser());
 
-server.use("/",routes);
+// Middleware global para las rutas
+server.use("/", routes);
 
-server.use((err,req,res,next)=>{
-    const status= err.status || 500;
-    const  message=err.message || 'Somenthing went wrong';
+// Manejo de errores
+server.use((err, req, res, next) => {
+    const status = err.status || 500;
+    const message = err.message || 'Something went wrong';
     console.error(err);
-    res.status(status).send(message)
-})
+    res.status(status).send(message);
+});
 
-module.exports =server;
+module.exports = server;
