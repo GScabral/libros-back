@@ -2,7 +2,6 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require("path");
 const routes = require('./routes/index.js');
 
 require("./db.js");
@@ -20,9 +19,9 @@ server.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true, // Permite enviar cookies
-    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH', // Métodos permitidos
-    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept', // Headers permitidos
+    credentials: true,
+    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
 }));
 
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
