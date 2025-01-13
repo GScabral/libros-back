@@ -10,7 +10,7 @@ const server = express();
 server.name = "SERVER LIBRO";
 
 // Configuración de CORS
-const allowedOrigins = ['http://localhost:3007', ' https://gscabral.github.io/Proyectos-libros'];
+const allowedOrigins = ['http://localhost:3007', ' https://gscabral.github.io/Proyectos-libros/'];
 
 server.use(cors({
     origin: (origin, callback) => {
