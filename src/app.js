@@ -11,22 +11,25 @@ server.name = "SERVER LIBRO";
 
 // Configuración de CORS
 const allowedOrigins = ['http://localhost:3007', 'https://gscabral.github.io'];
+
 server.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
+            callback(null, true); // Permite la solicitud
         } else {
-            callback(new Error('Not allowed by CORS'));
+            callback(new Error('Not allowed by CORS')); // Bloquea la solicitud si el origen no es válido
         }
     },
-    credentials: true,
-    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
-    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+    credentials: true, // Permitir envío de cookies u otros encabezados de autenticación
+    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH', // Métodos permitidos
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept', // Encabezados permitidos
+    preflightContinue: false, // Finaliza la solicitud OPTIONS directamente
 }));
-
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser());
+server.options('*', cors()); // Habilitar CORS para solicitudes preflight
+
 
 // Middleware global para las rutas
 server.use("/", routes);
