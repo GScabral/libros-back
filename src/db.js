@@ -16,12 +16,14 @@ const sequelize = new Sequelize(DATABASE_URL, {
 const basename = path.basename(__filename);
 const modelDefiners = [];
 
-fs.readdirSync(path.join(__dirname, "./models"))
+// Leer todos los archivos de la carpeta models, requerirlos y agregarlos al array modelDefiners
+fs.readdirSync(path.join(__dirname, './models'))
     .filter((file) => file.indexOf('.') !== 0 && file.slice(-3) === '.js')
     .forEach((file) => {
         const model = require(path.join(__dirname, './models', file));
         modelDefiners.push(model);
-    })
+    });
+
 
 modelDefiners.forEach(model => model(sequelize, DataTypes));
 
