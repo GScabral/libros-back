@@ -1,17 +1,13 @@
-const express = require("express");
+const express = require('express');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const routes = require('./routes/index.js');
-
-require("./db.js");
+const routes = require('./routes');
 
 const server = express();
-server.name = "SERVER LIBRO";
 
-// Configuración de CORS
 const allowedOrigins = ['https://gscabral.github.io', 'https://libros-back.vercel.app'];
 
+// Middleware para configurar CORS
 server.use((req, res, next) => {
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -20,19 +16,7 @@ server.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Credentials', 'true');
     if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-        return res.sendStatus(204);
-    }
-    next();
-});
-
-// Manejo explícito de solicitudes preflight
-server.use((req, res, next) => {
-    if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Origin', allowedOrigins.join(','));
-        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        res.header('Access-Control-Allow-Credentials', 'true');
-        console.log('Solicitud preflight manejada.');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH');
         return res.sendStatus(204);
     }
     next();
@@ -47,6 +31,11 @@ server.use(cookieParser());
 server.use((req, res, next) => {
     console.log(`Solicitud entrante: ${req.method} ${req.url}`);
     next();
+});
+
+// Ruta para la raíz del servidor
+server.get('/', (req, res) => {
+    res.send('Bienvenido al backend de Proyecto Libros');
 });
 
 // Ruta de prueba CORS
