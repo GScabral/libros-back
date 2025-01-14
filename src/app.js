@@ -10,27 +10,21 @@ const server = express();
 server.name = "SERVER LIBRO";
 
 // Configuración de CORS
-const allowedOrigins = [
-    'http://localhost:3007', // Para desarrollo local
-    'https://gscabral.github.io' // Dominio del frontend en GitHub Pages
-];
+const allowedOrigins = ['https://gscabral.github.io', 'https://libros-back.vercel.app'];
 
-// Middleware de CORS con logs para depuración
-server.use(cors({
-    origin: (origin, callback) => {
-        console.log(`Solicitud desde origen: ${origin}`);
-        if (!origin || allowedOrigins.includes(origin)) {
-            console.log(`Origen permitido: ${origin || "Sin origen (probablemente localhost)"}`);
-            callback(null, true);
-        } else {
-            console.error(`Origen bloqueado por CORS: ${origin}`);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
-}));
+server.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+    }
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        return res.sendStatus(204);
+    }
+    next();
+});
 
 // Manejo explícito de solicitudes preflight
 server.use((req, res, next) => {
