@@ -18,21 +18,32 @@ const allowedOrigins = [
 // Middleware de CORS con logs para depuración
 server.use(cors({
     origin: (origin, callback) => {
-        console.log(`Solicitud desde origen: ${origin}`); // Log del origen que realiza la solicitud
+        console.log(`Solicitud desde origen: ${origin}`);
         if (!origin || allowedOrigins.includes(origin)) {
             console.log(`Origen permitido: ${origin || "Sin origen (probablemente localhost)"}`);
-            callback(null, true); // Permite la solicitud
+            callback(null, true);
         } else {
             console.error(`Origen bloqueado por CORS: ${origin}`);
-            callback(new Error('Not allowed by CORS')); // Bloquea la solicitud si el origen no es válido
+            callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true, // Permitir envío de cookies u otros encabezados de autenticación
-    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH', // Métodos HTTP permitidos
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'], // Encabezados permitidos
+    credentials: true,
+    methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
 }));
 
-server.options('*', cors()); // Habilitar CORS para solicitudes preflight
+// Manejo explícito de solicitudes preflight
+server.use((req, res, next) => {
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Origin', allowedOrigins.join(','));
+        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        res.header('Access-Control-Allow-Credentials', 'true');
+        console.log('Solicitud preflight manejada.');
+        return res.sendStatus(204);
+    }
+    next();
+});
 
 // Configuración de body-parser
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -43,6 +54,11 @@ server.use(cookieParser());
 server.use((req, res, next) => {
     console.log(`Solicitud entrante: ${req.method} ${req.url}`);
     next();
+});
+
+// Ruta de prueba CORS
+server.get('/test-cors', (req, res) => {
+    res.send('CORS configurado correctamente.');
 });
 
 // Middleware global para las rutas
