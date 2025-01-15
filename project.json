@@ -17,7 +17,7 @@
             "headers": [
                 {
                     "key": "Access-Control-Allow-Origin",
-                    "value": "https://gscabral.github.io"
+                    "value": "*"
                 },
                 {
                     "key": "Access-Control-Allow-Methods",
