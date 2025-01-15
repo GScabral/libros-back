@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const routes = require('./routes');
 
 const server = express();
@@ -8,19 +9,17 @@ const server = express();
 const allowedOrigins = ['https://gscabral.github.io', 'https://libros-back.vercel.app'];
 
 // Middleware para configurar CORS
-server.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.header('Access-Control-Allow-Origin', origin);
-    }
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH');
-        return res.sendStatus(204);
-    }
-    next();
-});
+server.use(cors({
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true
+}));
 
 // Configuración de body-parser
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
