@@ -6,9 +6,18 @@ const routes = require('./routes');
 
 const server = express();
 
-// Middleware para configurar CORS para aceptar todas las solicitudes
+const allowedOrigins = ['https://gscabral.github.io', 'https://libros-back.vercel.app'];
+
+// Middleware para configurar CORS
 server.use(cors({
-    origin: '*',
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
     credentials: true,
     methods: 'GET,POST,OPTIONS,PUT,DELETE,PATCH',
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
