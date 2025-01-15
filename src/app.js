@@ -43,7 +43,7 @@ server.get('/test-cors', (req, res) => {
 });
 
 // Middleware global para las rutas
-server.use("/", routes);
+server.use("/api", routes); // Asegúrate de que las rutas estén bajo /api
 
 // Manejo de errores con logs
 server.use((err, req, res, next) => {
