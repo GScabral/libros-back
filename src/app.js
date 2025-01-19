@@ -11,25 +11,27 @@ const server = express();
 server.use(helmet());
 
 // Middleware para configurar CORS
-const allowedOrigins = ['https://gscabral.github.io/Proyectos-libros/', 'http://localhost:5173'];
+const allowedOrigins = ['https://gscabral.github.io', 'http://localhost:5173'];
 
 server.use(cors({
     origin: function (origin, callback) {
         console.log(`Solicitud de origen: ${origin}`); // Log de origen de la solicitud
-        if (!origin) return callback(null, true);
+        if (!origin) {
+            console.log('Solicitud sin origen, permitiendo acceso.');
+            return callback(null, true);
+        }
         if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            const msg = `La política de CORS para este sitio no permite el acceso desde el origen especificado: ${origin}`;
             console.log(msg); // Log de mensaje de error de CORS
             return callback(new Error(msg), false);
         }
+        console.log(`Origen permitido: ${origin}`);
         return callback(null, true);
     },
     credentials: true,
     methods: 'GET,POST,OPTIONS,PUT,DELETE,PATCH',
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
 }));
-
-
 
 // Configuración de body-parser
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -53,12 +55,12 @@ server.get('/test-cors', (req, res) => {
 });
 
 // Middleware global para las rutas
-server.use("/api", routes); // Asegúrate de que las rutas estén bajo /api
+server.use("/", routes); // Asegúrate de que las rutas estén bajo /api
 
 // Manejo de errores con logs
 server.use((err, req, res, next) => {
     const status = err.status || 500;
-    const message = err.message || 'Something went wrong';
+    const message = err.message || 'Algo salió mal';
     console.error(`Error detectado: ${message} (status: ${status})`);
     res.status(status).send(message);
 });

@@ -8,9 +8,9 @@ const RoutesAdmin=require("./RoutesAdmin")
 
 const router = Router();
 
-router.use("/api/libros",Routeslibros);
-router.use("/api/create",RoutesUser);
-router.use("/api/admin",RoutesAdmin);
+router.use("/libros",Routeslibros);
+router.use("/create",RoutesUser);
+router.use("/admin",RoutesAdmin);
 
 
 
