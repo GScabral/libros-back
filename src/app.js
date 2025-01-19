@@ -29,6 +29,12 @@ server.use(cors({
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
 }));
 
+// Middleware para agregar el encabezado Access-Control-Allow-Origin
+server.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
+
 // Configuración de body-parser
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
@@ -37,12 +43,6 @@ server.use(cookieParser());
 // Middleware para registrar cada solicitud al servidor
 server.use((req, res, next) => {
     console.log(`Solicitud entrante: ${req.method} ${req.url}`);
-    next();
-});
-
-// Middleware para agregar el encabezado Access-Control-Allow-Origin
-server.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
     next();
 });
 
