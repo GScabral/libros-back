@@ -35,13 +35,17 @@ router.get("/SearchAuthor/:author",async(req,res)=>{
 
 router.get("/ListBooks", async (req, res) => {
     try {
+        console.log("Solicitud a /ListBooks recibida"); // Log de solicitud recibida
         const list = await getLibros();
-        res.status(200).json(list)
+        console.log("Libros obtenidos:", list); // Log de libros obtenidos
+        res.status(200).json(list);
     } catch (error) {
-        res.status(500).json({ error: "error al traer los libros" })
+        console.error("Error al traer los libros:", error); // Log de error
+        res.status(500).json({ error: "error al traer los libros" });
     }
-})
+});
 
+module.exports = router;
 router.get("/detailBook/:id", async (req, res) => {
     const id = req.params.id;
     try {
