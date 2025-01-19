@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const helmet = require('helmet'); // Importar helmet
-const routes = require('./routes');
+const router = require('./routes/index'); // Importar las rutas
 
 const server = express();
 
@@ -55,7 +55,7 @@ server.get('/test-cors', (req, res) => {
 });
 
 // Middleware global para las rutas
-server.use("/", routes); // Asegúrate de que las rutas estén bajo /api
+server.use("/", router); // Asegúrate de que las rutas estén bajo /api
 
 // Manejo de errores con logs
 server.use((err, req, res, next) => {
