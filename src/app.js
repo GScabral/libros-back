@@ -11,7 +11,7 @@ const server = express();
 server.use(helmet());
 
 // Middleware para configurar CORS
-const allowedOrigins = ['https://gscabral.github.io', 'http://localhost:5173'];
+const allowedOrigins = ['https://gscabral.github.io/Proyectos-libros/', 'http://localhost:5173'];
 
 server.use(cors({
     origin: function (origin, callback) {
@@ -29,11 +29,7 @@ server.use(cors({
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
 }));
 
-// Middleware para agregar el encabezado Access-Control-Allow-Origin
-server.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
+
 
 // Configuración de body-parser
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
