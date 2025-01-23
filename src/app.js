@@ -2,13 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const helmet = require('helmet'); // Importar helmet
+const helmet = require('helmet');
 const router = require('./routes/index'); // Importar las rutas
 
 const server = express();
 
 // Implementar Helmet para mejorar la seguridad HTTP
-server.use(helmet());
+server.use(helmet({
+    contentSecurityPolicy: false, // Desactivado si interfiere con CORS
+}));
 
 // Middleware para configurar CORS
 const allowedOrigins = ['https://gscabral.github.io', 'http://localhost:5173'];
@@ -16,21 +18,17 @@ const allowedOrigins = ['https://gscabral.github.io', 'http://localhost:5173'];
 server.use(cors({
     origin: function (origin, callback) {
         console.log(`Solicitud de origen: ${origin}`); // Log de origen de la solicitud
-        if (!origin) {
-            console.log('Solicitud sin origen, permitiendo acceso.');
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            console.log('Origen permitido.');
             return callback(null, true);
         }
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = `La política de CORS para este sitio no permite el acceso desde el origen especificado: ${origin}`;
-            console.log(msg); // Log de mensaje de error de CORS
-            return callback(new Error(msg), false);
-        }
-        console.log(`Origen permitido: ${origin}`);
-        return callback(null, true);
+        const msg = `CORS denegado para el origen: ${origin}`;
+        console.log(msg); // Log del error de CORS
+        return callback(new Error(msg), false);
     },
     credentials: true,
     methods: 'GET,POST,OPTIONS,PUT,DELETE,PATCH',
-    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
 }));
 
 // Configuración de body-parser
@@ -49,20 +47,20 @@ server.get('/', (req, res) => {
     res.send('Bienvenido al backend de Proyecto Libros');
 });
 
-// Ruta de prueba CORS
+// Ruta de prueba para verificar CORS
 server.get('/test-cors', (req, res) => {
-    res.send('CORS configurado correctamente.');
+    res.json({ message: 'CORS configurado correctamente.' });
 });
 
 // Middleware global para las rutas
-server.use("/", router); // Asegúrate de que las rutas estén bajo /api
+server.use("/api", router);
 
 // Manejo de errores con logs
 server.use((err, req, res, next) => {
     const status = err.status || 500;
     const message = err.message || 'Algo salió mal';
     console.error(`Error detectado: ${message} (status: ${status})`);
-    res.status(status).send(message);
+    res.status(status).send({ error: message });
 });
 
 module.exports = server;
