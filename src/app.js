@@ -13,7 +13,11 @@ server.use(helmet({
 }));
 
 // Middleware para configurar CORS
-const allowedOrigins = ['https://gscabral.github.io', 'http://localhost:5173'];
+const allowedOrigins = [
+    'https://gscabral.github.io',
+    'http://localhost:5173',
+    'https://libros-back.vercel.app'
+];
 
 server.use(cors({
     origin: function (origin, callback) {
