@@ -14,26 +14,26 @@ server.use(helmet({
 
 // Middleware para configurar CORS
 const allowedOrigins = [
-    'https://gscabral.github.io/Proyectos-libros/',
-    'http://localhost:5173',
-    'https://libros-back.vercel.app'
+    'https://gscabral.github.io/Proyectos-libros/', // Tu frontend alojado en GitHub Pages
+    'http://localhost:5173', // Para pruebas locales (opcional)
+    'https://libros-back.vercel.app' // Si necesitas otra URL para tu backend
 ];
 
 server.use(cors({
     origin: function (origin, callback) {
-        console.log(`Solicitud de origen: ${origin}`); // Log de origen de la solicitud
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            console.log('Origen permitido.');
-            return callback(null, true);
+        console.log(`Solicitud de origen: ${origin}`); // Depurar el origen
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true); // Permitir el origen
         }
         const msg = `CORS denegado para el origen: ${origin}`;
-        console.log(msg); // Log del error de CORS
+        console.error(msg); // Registrar el error
         return callback(new Error(msg), false);
     },
-    credentials: true,
+    credentials: true, // Para permitir cookies o credenciales
     methods: 'GET,POST,OPTIONS,PUT,DELETE,PATCH',
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
 }));
+
 
 // Configuración de body-parser
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
