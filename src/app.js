@@ -43,6 +43,7 @@ server.use(cookieParser());
 // Middleware para registrar cada solicitud al servidor
 server.use((req, res, next) => {
     console.log(`Solicitud entrante: ${req.method} ${req.url}`);
+    console.log('Cabeceras:', req.headers); // Cabeceras de la solicitud
     next();
 });
 
@@ -53,9 +54,9 @@ server.get('/', (req, res) => {
 
 // Ruta de prueba para verificar CORS
 server.get('/test-cors', (req, res) => {
+    console.log('Solicitud recibida en /test-cors');
     res.json({ message: 'CORS configurado correctamente.' });
 });
-
 // Middleware global para las rutas
 server.use("/api", router);
 
@@ -64,6 +65,7 @@ server.use((err, req, res, next) => {
     const status = err.status || 500;
     const message = err.message || 'Algo salió mal';
     console.error(`Error detectado: ${message} (status: ${status})`);
+    console.error('Detalles del error:', err.stack); // Muestra más detalles del error
     res.status(status).send({ error: message });
 });
 
