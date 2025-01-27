@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+const cors = require('cors'); // Importar cors
 const router = require('./routes/index'); // Importar las rutas
 
 const server = express();
@@ -16,26 +17,29 @@ server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser());
 
-// Middleware para configurar manualmente los encabezados CORS
+// Configuración de CORS
 const allowedOrigins = [
-    'https://gscabral.github.io/Proyectos-libros/', // Tu frontend alojado en GitHub Pages
+    'https://gscabral.github.io', // Tu frontend alojado en GitHub Pages
     'http://localhost:5173', // Para pruebas locales (opcional)
-    'https://libros-back.vercel.app' // Si necesitas otra URL para tu backend
+    'https://libros-back.vercel.app', // Si necesitas otra URL para tu backend
 ];
 
-server.use((req, res, next) => {
-    const origin = req.headers.origin;
-    console.log(`Solicitud de origen: ${origin}`); // Depurar el origen
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE,PATCH');
-        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-    } else {
-        console.error(`CORS denegado para el origen: ${origin}`); // Registrar el error
-    }
-    next();
-});
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Permite solicitudes desde orígenes permitidos
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.error(`CORS denegado para el origen: ${origin}`);
+            callback(new Error(`No autorizado por CORS: ${origin}`));
+        }
+    },
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'], // Métodos permitidos
+    credentials: true, // Permitir envío de cookies (si es necesario)
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'], // Cabeceras permitidas
+};
+
+server.use(cors(corsOptions)); // Aplicar el middleware de CORS
 
 // Middleware para registrar cada solicitud al servidor
 server.use((req, res, next) => {
