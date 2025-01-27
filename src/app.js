@@ -8,10 +8,17 @@ const router = require('./routes/index'); // Importar las rutas
 const server = express();
 
 // Implementar Helmet para mejorar la seguridad HTTP
-server.use(helmet({
-    contentSecurityPolicy: false, // Desactivado si interfiere con CORS
-}));
-
+server.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://gscabral.github.io'],
+                connectSrc: ["'self'", 'https://gscabral.github.io', 'https://libros-back.vercel.app'],
+            },
+        },
+    })
+);
 // Configuración de body-parser
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
