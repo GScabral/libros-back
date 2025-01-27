@@ -24,27 +24,26 @@ server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser());
 
-// Configuración de CORS
-const allowedOrigins = [
-    'https://gscabral.github.io', // Tu frontend alojado en GitHub Pages
-    'http://localhost:5173', // Para pruebas locales (opcional)
-    'https://libros-back.vercel.app', // Si necesitas otra URL para tu backend
-];
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Permite solicitudes desde orígenes permitidos
+        const allowedOrigins = [
+            'https://gscabral.github.io',
+            'http://localhost:5173', // Opcional para pruebas locales
+        ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            console.error(`CORS denegado para el origen: ${origin}`);
-            callback(new Error(`No autorizado por CORS: ${origin}`));
+            callback(new Error(`CORS bloqueado para el origen: ${origin}`));
         }
     },
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'], // Métodos permitidos
-    credentials: true, // Permitir envío de cookies (si es necesario)
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'], // Cabeceras permitidas
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+    credentials: true,
 };
+
+server.use(cors(corsOptions));
+
 
 server.use(cors(corsOptions)); // Aplicar el middleware de CORS
 
